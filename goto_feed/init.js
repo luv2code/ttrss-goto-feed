@@ -31,6 +31,8 @@ require(["dojo/ready"], function(ready) {
 							});
 						}
 					}
+					// Sort feedItems alphabetically by name for consistent behavior
+					feedItems.sort((a, b) => a.name.localeCompare(b.name));
 				}
 
 				const dialog = new fox.SingleUseDialog({
@@ -61,6 +63,7 @@ require(["dojo/ready"], function(ready) {
 					searchAttr: "name",
 					queryExpr: "*${0}*",
 					ignoreCase: true,
+					autoComplete: true,  // Explicitly disable auto-complete to prevent input changes if you find yourself not typing fast enough.
 					placeHolder: __("Search for a feed..."),
 					style: "width: 100%",
 					required: true
