@@ -63,7 +63,7 @@ require(["dojo/ready"], function(ready) {
 					searchAttr: "name",
 					queryExpr: "*${0}*",
 					ignoreCase: true,
-					autoComplete: true,  // Explicitly disable auto-complete to prevent input changes if you find yourself not typing fast enough.
+					autoComplete: false,
 					placeHolder: __("Search for a feed..."),
 					style: "width: 100%",
 					required: true
@@ -72,17 +72,38 @@ require(["dojo/ready"], function(ready) {
 				const container = document.getElementById("gotoFeed_select_container");
 				container.appendChild(select.domNode);
 
+				select.on("search", () => {
+					window.setTimeout(() => {
+						if (select.dropDown && select.dropDown.selectFirstNode) {
+							select.dropDown.selectFirstNode();
+						}
+					}, 10);
+				});
+
 				window.setTimeout(() => select.focus(), 10);
 
-				const go = () => {
-					if (select.isValid()) {
-						const val = select.get("value");
-						if (val) {
-							const is_cat = val.match("^CAT:") !== null;
-							const feed = val.substr(val.indexOf(":") + 1);
-							Feeds.open({ feed: feed, is_cat: is_cat });
-							dialog.hide();
+				const go = (e) => {
+					if (e && typeof e.preventDefault === 'function') e.preventDefault();
+					let val = select.get("value");
+
+					if (!select.isValid()) {
+						const text = select.get("displayedValue");
+						if (text) {
+							const textLower = text.toLowerCase();
+							const match = feedItems.find(item => item.name.toLowerCase().includes(textLower));
+							if (match) {
+								val = match.id;
+							} else {
+								val = null;
+							}
 						}
+					}
+
+					if (val) {
+						const is_cat = val.match("^CAT:") !== null;
+						const feed = val.substr(val.indexOf(":") + 1);
+						Feeds.open({ feed: feed, is_cat: is_cat });
+						dialog.hide();
 					}
 				};
 

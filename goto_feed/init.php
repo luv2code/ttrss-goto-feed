@@ -11,7 +11,7 @@ class Goto_Feed extends Plugin {
 	}
 
 	function about() {
-		return [1.01,
+		return [1.02,
 			"Add gg keyboard shortcut to bring up a dialog to autocomplete and navigate to feeds.",
 			"@luv2code https://github.com/luv2code/ttrss-goto-feed",
 			false,
