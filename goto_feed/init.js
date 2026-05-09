@@ -25,14 +25,34 @@ require(["dojo/ready"], function(ready) {
 						const is_cat = id && id.startsWith('CAT:');
 
 						if (is_feed || is_cat) {
+							let unread = 0;
+							if (item.unread) {
+								const unreadRaw = Array.isArray(item.unread) ? item.unread[0] : item.unread;
+								const unreadInt = parseInt(unreadRaw, 10);
+								if (!isNaN(unreadInt) && unreadInt > 0) {
+									unread = unreadInt;
+								}
+							}
+
+							let name = item.name ? (Array.isArray(item.name) ? item.name[0] : item.name) : "Unknown";
+							if (unread > 0) {
+								name += ` [${unread}]`;
+							}
+
 							feedItems.push({
 								id: id,
-								name: item.name ? (Array.isArray(item.name) ? item.name[0] : item.name) : "Unknown"
+								name: name,
+								unread: unread
 							});
 						}
 					}
-					// Sort feedItems alphabetically by name for consistent behavior
-					feedItems.sort((a, b) => a.name.localeCompare(b.name));
+					// Sort feedItems by unread count descending, then alphabetically by name
+					feedItems.sort((a, b) => {
+						if (a.unread !== b.unread) {
+							return b.unread - a.unread;
+						}
+						return a.name.localeCompare(b.name);
+					});
 				}
 
 				const dialog = new fox.SingleUseDialog({
